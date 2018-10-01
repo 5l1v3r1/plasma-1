@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+
+import requests
+import readline
+import config
+from config import *
+
+def pipl(fn, mn, ln, em, phn, un, loc):
+	search = "https://pipl.com/search/?"
+	if (fn == "" and mn == "" and ln == "" and em == "" and phn == "" and un == "" and loc == ""):
+		print (error_atleast_one_field_required)
+		return False
+	if ((fn == "" and ln == "" and mn != "") or (fn == "" and ln != "") or (fn != "" and ln == "")):
+		print (error_first_last_name_cannot_be_empty)
+		return False
+	if (fn == "" and mn == "" and ln == "" and em == "" and phn == "" and un == "" and loc != ""):
+		print (error_one_or_more_field_required)
+		return False
+	if (fn != ""):
+		search = search + "fn=" + fn + "&"
+	if (mn != ""):
+		search = search + "mn=" + mn + "&"
+	if (ln != ""):
+		search = search + "ln=" + ln + "&"
+	if (em != ""):
+		search = search + "em=" + em + "&"
+	if (phn != ""):
+		search = search + "phn=" + phn + "&"
+	if (un != ""):
+		search = search + "un=" + un + "&"
+	if (loc != ""):
+		search = search + "aloc=" + loc
+	search = search.replace(" ", "%20")
+	print ("")
+	print (point + "[~]" + item + " Please visit the link for search result\n" + search + "\n" + end)
+	return True
+
+def info():
+	config.info_banner()
+	print ("")
+	print ("Find a person on the internet using Name, Email, Phone, Username or Location. If")
+	print ("you don't know any of them, just leave them empty.")
+	print ("" + end)
+	return True
+
+def source(fn, mn, ln, em, phn, un, loc):
+	print ("")
+	print (point + "[~]" + item + " First Name ==> " + fn)
+	print (point + "[~]" + item + " Middle Name ==> " + mn)
+	print (point + "[~]" + item + " Last Name ==> " + ln)
+	print (point + "[~]" + item + " Email ==> " + em)
+	print (point + "[~]" + item + " Phone ==> " + phn)
+	print (point + "[~]" + item + " Username ==> " + un)
+	print (point + "[~]" + item + " Location ==> " + loc)
+	print ("" + end)
+	return True
+
+def help():
+	config.help_banner()
+	print ("")
+	print ("     back                       Exit the module and go back to main menu.")
+	print ("     help                       Display help menu.")
+	print ("     info                       Show what the module does.")
+	print ("     fn <first_name>            Set the first name.")
+	print ("     mn <middle_name>           Set the middle name.")
+	print ("     ln <last_name>             Set the last name.")
+	print ("     em <email>                 Set the email address.")
+	print ("     phn <phone>                Set the phone contact.")
+	print ("     un <username>              Set the username.")
+	print ("     loc <location>             Set the location.")
+	print ("     run                        Run the module.")
+	print ("     source                     Show all the set values.")
+	print ("" + end)
+	return True
+
+def menu():
+	fn = ""
+	mn = ""
+	ln = ""
+	em = ""
+	phn = ""
+	un = ""
+	loc = ""
+	while (True):
+		command  = input(cmd_tag + module + bold + "<pipl> " + end)
+		if (command == "back"):
+			break
+		elif (command == "help"):
+			help()
+		elif (command[0:4] == "info"):
+			info()
+		elif (command[0:3] == "fn "):
+			fn = command[3:]
+		elif (command[0:3] == "mn "):
+			mn = command[3:]
+		elif (command[0:3] == "ln "):
+			ln = command[3:]
+		elif (command[0:3] == "em "):
+			em = command[3:]
+		elif (command[0:4] == "phn "):
+			phn = command[4:]
+		elif (command[0:3] == "un "):
+			un = command[3:]
+		elif (command[0:4] == "loc "):
+			loc = command[4:]
+		elif (command[0:3] == "run"):
+			pipl(fn, mn, ln, em, phn, un, loc)
+		elif (command[0:6] == "source"):
+			source(fn, mn, ln, em, phn, un, loc)
+		else:
+			print (warning_incorrect_command)
+	return True
+
+if __name__ == "__main__":
+	menu()

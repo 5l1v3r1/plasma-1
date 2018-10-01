@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+
+import requests
+import readline
+import json
+import config
+from config import *
+
+def refine(result):
+	result = result.replace("\n", "")
+	result = result.replace("\u001b[39m", "")
+	result = result.replace("\u001b[92m", "")
+	result = result.replace("\u001b[94m", "")
+	result = result.replace("\u001b[95m", "")
+	result = result.replace("\u001b[96m", "")
+	result = result.replace("  ", "")
+	result = result.replace(" ", "")
+	result = json.loads(result)
+	return result
+
+def get_ipinfo(ip):
+	if (ip == ""):
+		print (error_ip_not_set)
+		return False
+	request = "http://ip-api.com/" + ip
+	result = ""
+	try:
+		result = requests.get(request).text
+	except:
+		print (error_unable_to_fetch_data)
+		return False
+	if (result == ""):
+		print (error_unable_to_fetch_data)
+		return False
+	result = refine(result)
+	print ("")
+	print (point + "[~] " + item + "IP: " + result["query"])
+	print (point + "[~] " + item + "Country: " + result["country"])
+	print (point + "[~] " + item + "Country Code: " + result["countryCode"])
+	print (point + "[~] " + item + "Region Code: " + result["region"])
+	print (point + "[~] " + item + "Region Name: " + result["regionName"])
+	print (point + "[~] " + item + "City: " + result["city"])
+	print (point + "[~] " + item + "Zip: " + result["zip"])
+	print (point + "[~] " + item + "Latitude: " + str(result["lat"]))
+	print (point + "[~] " + item + "Longitude: " + str(result["lon"]))
+	print (point + "[~] " + item + "Timezone: " + result["timezone"])
+	print (point + "[~] " + item + "ISP: " + result["isp"])
+	print (point + "[~] " + item + "Organization: " + result["org"])
+	print (point + "[~] " + item + "Autonomous System: " + result["as"])
+	print (point + "[~] " + item + "Mobile: " + str(result["mobile"]))
+	print (point + "[~] " + item + "Proxy: " + str(result["proxy"]))
+	print ("" + end)
+
+def info():
+	config.info_banner()
+	print ("")
+	print ("Get details related to an IP address. Usually the information would consist on")
+	print ("Country, Region, City, Latitude/Longitude coordinates and the ISP/org.")
+	print ("" + end)
+
+def source(ip):
+	print (point + "[~]" + item + " IP ==> " + ip + end)
+
+def help():
+	config.help_banner()
+	print ("")
+	print ("     back                       Exit the module and go back to main menu.")
+	print ("     help                       Display help menu.")
+	print ("     info                       Show what the module does.")
+	print ("     ip <x.x.x.x>               Set IP address.")
+	print ("     run                        Run the module.")
+	print ("     source                     Show all the set values.")
+	print ("" + end)
+
+def menu():
+	ip = ""
+	while (True):
+		command  = input(cmd_tag + module + bold + "<ip-api> " + end)
+		if (command == "back"):
+			break
+		elif (command == "help"):
+			help()
+		elif (command[0:4] == "info"):
+			info()
+		elif (command[0:3] == "ip "):
+			ip = command[3:]
+		elif (command[0:3] == "run"):
+			get_ipinfo(ip)
+		elif (command[0:6] == "source"):
+			source(ip)
+		else:
+			print (warning_incorrect_command)
+	return True
+
+if __name__ == "__main__":
+	menu()

@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+
+import requests
+import readline
+import json
+import config
+from config import *
+
+def get_company(company_name, jurisdiction_code, country):
+	request = ""
+	response = ""
+	while (True):
+		request = ""
+		if (company_name != ""):
+			request = request + "https://api.opencorporates.com/v0.4/companies/search?q=" + company_name
+		if (jurisdiction_code != ""):
+			request = request + "&jurisdiction_code=" + jurisdiction_code
+		if (country != ""):
+			request = request + "&country=" + country
+		request = request + "&page=1"
+		try:
+			response = json.loads(requests.get(request).text)
+			print ("")
+		except:
+			print (warning_poor_connection)
+			continue
+		if ("Rate limit exceeded" in str(response)) or ("This operation requires an api token" in str(response)):
+			print ("")
+			print (warning_rate_limit)
+			print ("" + end)
+			ip_changed = input(module + bold + "Enter Q to Exit or after changing IP enter any other key to continue: " + end)
+			if (ip_changed == "Q"):
+				return False
+			else:
+				continue
+		else:
+			break
+	total_count = response["results"]["total_count"]
+	total_pages = response["results"]["total_pages"]
+	companies = response["results"]["companies"]
+	retrievable_pages = 1
+	if (total_pages == 0):
+		print (error_result_not_found)
+		return
+	if (total_pages > 1):	
+		while (True):
+			print (module + bold + "OpenCorporates allows 50 requests per day and 200 requests per month without an API key.\nYou are going to make " + str(total_pages) + " requests resulting in " + str(total_count) + " matches.\nYou might be asked to change your IP multiple times to bypass the rate limit.\n" + end)
+			prompt = "Are you sure you want to proceed (y/n)? "
+			choice = input(module + bold + "" + prompt + end)
+			if (choice == "y"):
+				break
+			elif (choice == "n"):
+				return False
+			else:
+				continue
+		while (True):
+			try:
+				retrievable_pages = input(module + bold + "How many pages do you want to retrieve (1-999...9)? " + end)
+				retrievable_pages = int(retrievable_pages)
+			except:
+				print (error_integer_expected)
+				continue
+			break
+	for page in range(1,retrievable_pages+1):
+		for company in companies:
+			company = company["company"] 
+			title = "--------------"
+			for i in range(0,len(str(company["name"]))):
+				title = title + "-"
+			print ("" + note + title)
+			print ("Company Name: " + str(company["name"]))
+			print (title)
+			print (point + "[~]" + item + " Previous Names: " + str(company["previous_names"]))
+			print (point + "[~]" + item + " Address: " + str(company["registered_address_in_full"]))
+			print (point + "[~]" + item + " Company Type: " + str(company["company_type"]))
+			print (point + "[~]" + item + " Company Number: " + str(company["company_number"]))
+			print (point + "[~]" + item + " Branch Status: " + str(company["branch_status"]))
+			print (point + "[~]" + item + " Jurisdiction Code: " + str(company["jurisdiction_code"]))
+			print (point + "[~]" + item + " Inactive: " + str(company["inactive"]))
+			print (point + "[~]" + item + " Current Status: " + str(company["current_status"]))
+			print (point + "[~]" + item + " Created At: " + str(company["created_at"]))
+			print (point + "[~]" + item + " Incorporation Date: " + str(company["incorporation_date"]))
+			print (point + "[~]" + item + " Dissolution Date: " + str(company["dissolution_date"]))
+			print (point + "[~]" + item + " Retrieved At: " + str(company["retrieved_at"]))
+			print (point + "[~]" + item + " Updated At: " + str(company["updated_at"]))
+			print (point + "[~]" + item + " Publisher (Source): " + str(company["source"]["publisher"]))
+			print (point + "[~]" + item + " Retrieved At (Source): " + str(company["source"]["retrieved_at"]))
+			if "terms" in company["source"]:
+				print (point + "[~]" + item + " Terms (Source): " + str(company["source"]["terms"]))
+			print (point + "[~]" + item + " URL (Source): " + str(company["source"]["url"]))
+			print (point + "[~]" + item + " Registry URL: " + str(company["registry_url"]))
+			print (point + "[~]" + item + " OpenCorporates URL: " + str(company["opencorporates_url"]))
+			print ("" + end)
+		page = page + 1
+		if (page >= retrievable_pages):
+			break
+		while (True):
+			request = ""
+			if (company_name != ""):
+				request = request + "https://api.opencorporates.com/v0.4/companies/search?q=" + company_name
+			if (jurisdiction_code != ""):
+				request = request + "&jurisdiction_code=" + jurisdiction_code
+			if (country != ""):
+				request = request + "&country=" + country
+			request = request + "&page=" + str(page)
+			try:
+				response = json.loads(requests.get(request).text)
+			except:
+				print (warning_poor_connection)
+				continue
+			if ("Rate limit exceeded" in str(response)) or ("This operation requires an api token" in str(response)):
+				print (warning_rate_limit)
+				ip_changed = input(module + bold + "Enter Q to Exit or after changing IP enter any other key to Continue: " + end)
+				if (ip_changed == "Q"):
+					return
+				else:
+					continue
+			else:
+				break
+		companies = response["results"]["companies"]
+	return True
+
+def get_officer(officer, jurisdiction_code, position):
+	request = ""
+	response = ""
+	while (True):
+		request = ""
+		if (officer != ""):
+			request = request + "https://api.opencorporates.com/v0.4/officers/search?q=" + officer
+		if (jurisdiction_code != ""):
+			request = request + "&jurisdiction_code=" + jurisdiction_code
+		if (position != ""):
+			request = request + "&position=" + position
+		request = request + "&page=1"
+		try:
+			response = json.loads(requests.get(request).text)
+			print ("")
+		except:
+			print (warning_poor_connection)
+			continue
+		if ("Rate limit exceeded" in str(response)) or ("This operation requires an api token" in str(response)):
+			print ("")
+			print (warning_rate_limit)
+			print ("")
+			ip_changed = input(module + bold + "Enter Q to Exit or after changing IP enter any other key to continue: " + end)
+			if (ip_changed == "Q"):
+				return False
+			else:
+				continue
+		else:
+			break
+	total_count = response["results"]["total_count"]
+	total_pages = response["results"]["total_pages"]
+	officers = response["results"]["officers"]
+	if (total_pages == 0):
+		print ("")
+		print (error_result_not_found)
+		print ("" + end)
+		return
+	retrievable_pages = 1
+	if (total_pages > 1):	
+		while (True):
+			print (module + bold + "OpenCorporates allows 50 requests per day and 200 requests per month without an API key.\nYou are going to make " + str(total_pages) + " requests resulting in " + str(total_count) + " matches.\nYou might be asked to change your IP multiple times to bypass the rate limit.\n" + end)
+			prompt = "Are you sure you want to proceed (y/n)? "
+			choice = input(module + bold + "" + prompt + end)
+			if (choice == "y"):
+				break
+			elif (choice == "n"):
+				return False
+			else:
+				continue
+		while (True):
+			try:
+				retrievable_pages = input(module + bold + "How many pages do you want to retrieve (1-999...9)? " + end)
+				retrievable_pages = int(retrievable_pages)
+			except:
+				print ("")
+				print (error_integer_expected)
+				print ("" + end)
+				continue
+			break
+	for page in range(1,retrievable_pages+1):
+		for officer in officers:
+			officer = officer["officer"]
+			title = "--------------"
+			for i in range(0,len(str(officer["name"]))):
+				title = title + "-"
+			print ("" + note + title)
+			print ("Officer Name: " + str(officer["name"]))
+			print (title)
+			print (point + "[~]" + item + " ID: " + str(officer["id"]))
+			print (point + "[~]" + item + " UID: " + str(officer["uid"]))
+			print (point + "[~]" + item + " Jurisdiction Code: " + str(officer["jurisdiction_code"]))
+			print (point + "[~]" + item + " Position: " + str(officer["position"]))
+			print (point + "[~]" + item + " Retrieved At: " + str(officer["retrieved_at"]))
+			print (point + "[~]" + item + " OpenCorporates URL: " + str(officer["opencorporates_url"]))
+			print (point + "[~]" + item + " Start date: " + str(officer["start_date"]))
+			print (point + "[~]" + item + " End Date: " + str(officer["end_date"]))
+			print (point + "[~]" + item + " Occupation: " + str(officer["occupation"]))
+			print (point + "[~]" + item + " Current Status: " + str(officer["current_status"]))
+			print (point + "[~]" + item + " Inactive: " + str(officer["inactive"]))
+			print (point + "[~]" + item + " Company: " + str(officer["company"]["name"]))
+			print (point + "[~]" + item + " Company's Jurisdiction Code: " + str(officer["company"]["jurisdiction_code"]))
+			print (point + "[~]" + item + " Company Number: " + str(officer["company"]["company_number"]))
+			print (point + "[~]" + item + " OpenCorporates URL: " + str(officer["company"]["opencorporates_url"]))
+			print ("" + end)
+		page = page + 1
+		if (page >= retrievable_pages):
+			break
+		while (True):
+			request = ""
+			if (officer != ""):
+				request = request + "https://api.opencorporates.com/v0.4/officers/search?q=" + officer
+			if (jurisdiction_code != ""):
+				request = request + "&jurisdiction_code=" + jurisdiction_code
+			if (position != ""):
+				request = request + "&position=" + position
+			request = request + "&page=" + str(page)
+			try:
+				response = json.loads(requests.get(request).text)
+			except:
+				print (warning_poor_connection)
+				continue
+			if ("Rate limit exceeded" in str(response)) or ("This operation requires an api token" in str(response)):
+				print (warning_rate_limit)
+				ip_changed = input(module + bold + "Enter Q to Exit or after changing IP enter any other key to Continue: " + end)
+				if (ip_changed == "Q"):
+					return
+				else:
+					continue
+			else:
+				break
+		officers = response["results"]["officers"]
+	return True
+
+def opencorporates(company_name, country, jurisdiction_code, officer, position):
+	if (company_name == "" and officer == ""):
+		print (warning_atleast_one_field_required)
+		return False
+	if (company_name != ""):
+		get_company(company_name, jurisdiction_code, country)
+	if (officer != ""):
+		get_officer(officer, jurisdiction_code, position)
+	return True
+
+def info():
+	config.info_banner()
+	print ("")
+	print ("Find information related to any company or its employees. You can search a")
+	print ("company by name only but we'd suggest you to enter the jurisdiction code and")
+	print ("country so that you don't get bombarded with tons of data. Jurisdiction code is")
+	print ("a two or four letter code e.g. Great Britain 'gb', Michigan 'us_mi'. Remember!")
+	print ("If you enter the country name, it is necessary to enter the jursidiction code or")
+	print ("you might not get any result.")
+	print ("" + end)
+	return True
+
+def source(company_name, country, jurisdiction_code, officer, position):
+	print ("")
+	print (point + "[~]" + item + " Company ==> " + company_name)
+	print (point + "[~]" + item + " Country ==> " + country)
+	print (point + "[~]" + item + " Jurisdiction ==> " + jurisdiction_code)
+	print (point + "[~]" + item + " Officer ==> " + officer)
+	print (point + "[~]" + item + " Position ==> " + position)
+	print ("" + end)
+	return True
+
+def help():
+	config.help_banner()
+	print ("")
+	print ("     back                         Exit the module and go back to main menu.")
+	print ("     company <name>               Set the name of the company.")
+	print ("     country <name>               Name of the country where the company should")
+	print ("                                  be located.")
+	print ("     help                         Display help menu.")
+	print ("     info                         Show what the module does.")
+	print ("     jurisdiction <code>          United States (us), Great Britain (gb),")
+	print ("                                  Michigan (us_mi) etc.")
+	print ("     officer <name>               Set the name of the officer.")
+	print ("     position <designation>       The designation of the officer e.g ceo etc.")
+	print ("     run                          Run the module.")
+	print ("     source                       Show all the set values.")
+	print ("" + end)
+	return True
+
+def menu():
+	company_name = ""
+	country = ""
+	jurisdiction_code = ""
+	officer = ""
+	position = ""
+	while (True):
+		command  = input(cmd_tag + module + bold + "<opencorporates> " + end)
+		if (command == "back"):
+			break
+		elif (command[0:8] == "company "):
+			company_name = command[8:]
+		elif (command[0:8] == "country "):
+			country = command[8:]
+		elif (command == "help"):
+			help()
+		elif (command[0:4] == "info"):
+			info()
+		elif (command[0:13] == "jurisdiction "):
+			jurisdiction_code = command[13:]
+		elif (command[0:8] == "officer "):
+			officer = command[8:]
+		elif (command[0:9] == "position "):
+			position = command[9:]
+		elif (command[0:3] == "run"):
+			opencorporates(company_name, country, jurisdiction_code, officer, position)
+		elif (command[0:6] == "source"):
+			source(company_name, country, jurisdiction_code, officer, position)
+		else:
+			print (warning_incorrect_command)
+	return True
+
+if __name__ == "__main__":
+	menu()
