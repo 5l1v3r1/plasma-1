@@ -10,6 +10,6 @@ If you do not want any module you can just remove it from there. You can also ad
 
 Any new module can be added to Plasma. Create a python3 module, place it in ./modules and just call it from the main menu.
 
-Note: It would be really nice if you keep the config files for modules and the main menu separate lathough they are same.
+Note: It would be really nice if you keep the config files for modules and the main menu separate although they are same.
 
 Keep Calm and Gather Intel.
