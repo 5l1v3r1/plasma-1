@@ -16,9 +16,9 @@ Any new module can be added to Plasma. Create a python3 module, place it in ./mo
 
 # Modules
 
-1) ip-api                       Gather intel on any ip.
-2) pipl                         Run a search on a person, find their public profiles.
-3) opencorporates               Run a search on companies, oficers that work in them. Quickly find                                                             connections between companies and the people the work in them.
+1) ip-api - Gather intel on any ip.
+2) pipl - Run a search on a person, find their public profiles.
+3) opencorporates - Run a search on companies, oficers that work in them. Quickly find connections between companies and the people the work in them.
 
 More modules will be added soon.
 
