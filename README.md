@@ -6,6 +6,8 @@ The tool is integrated to multiple intel sources and fetches data from them. We 
 
 If you do not want any module you can just remove it from there. You can also add your own modules for intel gathering.
 
+The tool currently supports only python3 and causes issues on windows due to color scheme.
+
 # Adding New Modules
 
 Any new module can be added to Plasma. Create a python3 module, place it in ./modules and just call it from the main menu.
